@@ -112,19 +112,19 @@ public class Join_Simulation{
         }
         public boolean setBlock(int relation_index, int index, Block b){
             incrementDiskIO(1);
-            tracks.get(relation_index).add(b);
+            this.tracks.get(relation_index).add(b);
             return true;
         }
         public ArrayList<ArrayList<Block>> getTracks(){
             return this.tracks;
         }
         public Block getBlock(int rel_index, int block_index) {
-            if(block_index<0 || block_index >= tracks.get(rel_index).size())  {
+            if(block_index<0 || block_index >= this.tracks.get(rel_index).size())  {
               System.err.print("block index " + block_index + " out of disk bound" + "\n");
               return new Block();
             }
             incrementDiskIO(1);
-            return new Block(tracks.get(rel_index).get(block_index));
+            return new Block(this.tracks.get(rel_index).get(block_index));
         }
         public boolean extendTrack(int relation_index, int index, Tuple t){
             if(index < 0){
@@ -360,7 +360,7 @@ public class Join_Simulation{
 
         System.out.println("Loading into memory from disk and computing JOIN(R1, S), and loading back into disk...");
         System.out.println();
-        int numIOs = 0;
+
         //loading R1 into memory
         b = new Block();
         blockindex = 0;
@@ -374,7 +374,7 @@ public class Join_Simulation{
                     for(int y = 0; y < t2.size(); y++){
                         if(t1.get(x).getFields().get(1) == t2.get(y).getFields().get(0)){
                             Tuple t = new Tuple(2);
-                            t.setFields(t1.get(x).getFields().get(1), t1.get(x).getFields().get(1), t2.get(y).getFields().get(1));
+                            t.setFields(t1.get(x).getFields().get(0), t1.get(x).getFields().get(1), t2.get(y).getFields().get(1));
                             if(b.isFull()){
                                 disk.setBlock(2, blockindex, b);
                                 blockindex++;
@@ -400,10 +400,11 @@ public class Join_Simulation{
         b = new Block();
         i = 0;
         blockindex = 0;
+        Random rand2 = new Random();
         //loading this into disk, no need to match with B values in S
         while(i < 1200){
-            int randInt = rand.nextInt();
-            int randInt2 = rand.nextInt();
+            int randInt = rand2.nextInt();
+            int randInt2 = rand2.nextInt();
             Tuple t = new Tuple(3);
             t.setFields(randInt, randInt2);
             if(b.isFull()){
@@ -431,8 +432,9 @@ public class Join_Simulation{
                 for(int x = 0; x < t1.size(); x++){
                     for(int y = 0; y < t2.size(); y++){
                         if(t1.get(x).getFields().get(1) == t2.get(y).getFields().get(0)){
-                            Tuple t = new Tuple(2);
-                            t.setFields(t1.get(x).getFields().get(1), t1.get(x).getFields().get(1), t2.get(y).getFields().get(1));
+                            System.out.println(t1.get(x).getFields().get(1));
+                            Tuple t = new Tuple(3);
+                            t.setFields(t1.get(x).getFields().get(0), t1.get(x).getFields().get(1), t2.get(y).getFields().get(1));
                             if(b.isFull()){
                                 disk.setBlock(4, blockindex, b);
                                 blockindex++;
@@ -449,6 +451,7 @@ public class Join_Simulation{
 
         System.out.println("Number of Disk IOs for JOIN(R2, S) with 1200 tuples in R2...");
         System.out.println(disk.getDiskIO());
+        System.out.println();
 
         disk.resetDiskIO();
     }
