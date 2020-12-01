@@ -12,26 +12,30 @@ public class Join_Simulation{
 
     //tuple class
     public static class Tuple implements Serializable{
-        private int[] fields;
+        private ArrayList<Integer> fields;
         private int relation_index;
         public Tuple(){
-            this.fields = new int[2];
+            this.fields = new ArrayList<Integer>();
             this.relation_index = -1;
         }
         public Tuple(Tuple t){
-            this.fields = new int[2];
             this.fields = t.getFields();
             this.relation_index = t.getRelIndex();
         }
         public Tuple(int index){
-            this.fields = new int[2];
+            this.fields = new ArrayList<>();
             this.relation_index = index;
         }
         public void setFields(int a, int b){
-            this.fields[0] = a;
-            this.fields[1] = b;
+            this.fields.add(a);
+            this.fields.add(b);
         }
-        public int[] getFields(){
+        public void setFields(int a, int b, int c){
+            this.fields.add(a);
+            this.fields.add(b);
+            this.fields.add(c);
+        }
+        public ArrayList<Integer> getFields(){
             return this.fields;
         }
         public int getRelIndex(){
@@ -41,7 +45,7 @@ public class Join_Simulation{
             this.relation_index = i;
         }
         public void erase(){
-            this.fields = new int[2];
+            this.fields.clear();
         }
     }
 
@@ -308,8 +312,8 @@ public class Join_Simulation{
                 }
                 else{
                     b.addTuple(t);
+                    i++;
                 }
-                i++;
             }
         }
 
@@ -333,8 +337,10 @@ public class Join_Simulation{
                 blockindex++;
                 b = new Block();
             }
-            else b.addTuple(t);
-            i++;
+            else{
+                b.addTuple(t);
+                i++;
+            }
         }
         while(i < 1000){
             int randInt = rand.nextInt();
@@ -346,11 +352,16 @@ public class Join_Simulation{
                 blockindex++;
                 b = new Block();
             }
-            else b.addTuple(t);
-            i++;
+            else{
+                b.addTuple(t);
+                i++;
+            }
         }
-
         System.out.println("Loading into memory from disk...");
+        System.out.println();
+        System.out.println("Computing join...");
+        System.out.println();
+        System.out.println("Loading back to disk from memory...");
         System.out.println();
 
     }
