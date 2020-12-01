@@ -96,7 +96,7 @@ public class Join_Simulation{
 
         public Disk(){
             this.tracks = new ArrayList<ArrayList<Block>>();
-            for(int i = 0; i < 4; i++){
+            for(int i = 0; i < 5; i++){
                 this.tracks.add(new ArrayList<Block>());
             }
             this.diskIOs = 0;
@@ -342,7 +342,7 @@ public class Join_Simulation{
                 i++;
             }
         }
-        while(i < 1000){
+        while(i < 500){
             int randInt = rand.nextInt();
             int randInt2 = rand.nextInt();
             Tuple t = new Tuple(1);
@@ -357,12 +357,99 @@ public class Join_Simulation{
                 i++;
             }
         }
-        System.out.println("Loading into memory from disk...");
+
+        System.out.println("Loading into memory from disk and computing JOIN(R1, S), and loading back into disk...");
         System.out.println();
-        System.out.println("Computing join...");
-        System.out.println();
-        System.out.println("Loading back to disk from memory...");
+        int numIOs = 0;
+        //loading R1 into memory
+        b = new Block();
+        blockindex = 0;
+        for(int j = 0; j < disk.getTracks().get(1).size(); j++){
+            mem.setBlock(0, disk.getBlock(1, j));
+            for(int k = 0; k < disk.getTracks().get(0).size(); k++){
+                mem.setBlock(1, disk.getBlock(0, k));
+                ArrayList<Tuple> t1 = mem.getBlock(0).getTuples();
+                ArrayList<Tuple> t2 = mem.getBlock(1).getTuples();
+                for(int x = 0; x < t1.size(); x++){
+                    for(int y = 0; y < t2.size(); y++){
+                        if(t1.get(x).getFields().get(1) == t2.get(y).getFields().get(0)){
+                            Tuple t = new Tuple(2);
+                            t.setFields(t1.get(x).getFields().get(1), t1.get(x).getFields().get(1), t2.get(y).getFields().get(1));
+                            if(b.isFull()){
+                                disk.setBlock(2, blockindex, b);
+                                blockindex++;
+                                b = new Block();
+                            }
+                            else{
+                                b.addTuple(t);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        System.out.println("Number of Disk IOs for JOIN(R1, S) with 1000 tuples in R1...");
+        System.out.println(disk.getDiskIO());
         System.out.println();
 
+        disk.resetDiskIO();
+
+        //creating relation R2(A, B) for part 2
+        Relation r2 = new Relation(disk, mem, "R2(A,B)", 3);
+        b = new Block();
+        i = 0;
+        blockindex = 0;
+        //loading this into disk, no need to match with B values in S
+        while(i < 1200){
+            int randInt = rand.nextInt();
+            int randInt2 = rand.nextInt();
+            Tuple t = new Tuple(3);
+            t.setFields(randInt, randInt2);
+            if(b.isFull()){
+                disk.setBlock(3, blockindex, b);
+                blockindex++;
+                b = new Block();
+            }
+            else{
+                b.addTuple(t);
+            }
+            i++;
+        }
+
+        System.out.println("Loading into memory from disk and computing JOIN(R2, S), and loading back into disk...");
+        System.out.println();
+        //loading R2 into memory
+        b = new Block();
+        blockindex = 0;
+        for(int j = 0; j < disk.getTracks().get(3).size(); j++){
+            mem.setBlock(0, disk.getBlock(3, j));
+            for(int k = 0; k < disk.getTracks().get(0).size(); k++){
+                mem.setBlock(1, disk.getBlock(0, k));
+                ArrayList<Tuple> t1 = mem.getBlock(0).getTuples();
+                ArrayList<Tuple> t2 = mem.getBlock(1).getTuples();
+                for(int x = 0; x < t1.size(); x++){
+                    for(int y = 0; y < t2.size(); y++){
+                        if(t1.get(x).getFields().get(1) == t2.get(y).getFields().get(0)){
+                            Tuple t = new Tuple(2);
+                            t.setFields(t1.get(x).getFields().get(1), t1.get(x).getFields().get(1), t2.get(y).getFields().get(1));
+                            if(b.isFull()){
+                                disk.setBlock(4, blockindex, b);
+                                blockindex++;
+                                b = new Block();
+                            }
+                            else{
+                                b.addTuple(t);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        System.out.println("Number of Disk IOs for JOIN(R2, S) with 1200 tuples in R2...");
+        System.out.println(disk.getDiskIO());
+
+        disk.resetDiskIO();
     }
 }
