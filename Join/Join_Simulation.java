@@ -91,7 +91,7 @@ public class Join_Simulation{
         private long diskIOs;
 
         public Disk(){
-            this.tracks = new ArrayList<ArrayList<Block>>(4);
+            this.tracks = new ArrayList<ArrayList<Block>>();
             for(int i = 0; i < 4; i++){
                 this.tracks.add(new ArrayList<Block>());
             }
@@ -107,12 +107,8 @@ public class Join_Simulation{
             this.diskIOs = 0;
         }
         public boolean setBlock(int relation_index, int index, Block b){
-            if(index < 0){
-                System.err.print("Block index is out of bounds.");
-                return false;
-            }
             incrementDiskIO(1);
-            tracks.get(relation_index).set(index, b);
+            tracks.get(relation_index).add(b);
             return true;
         }
         public ArrayList<ArrayList<Block>> getTracks(){
@@ -285,12 +281,14 @@ public class Join_Simulation{
     //main class
     public static void main(String[] args){
         System.out.println("Starting components...");
+        System.out.println();
         Memory mem = new Memory();
         Disk disk = new Disk();
 
+        System.out.println("Setting up relation S(B, C)...");
+        System.out.println();
         //creating relation S(B, C)
         Relation s = new Relation(disk, mem, "S(B,C)", 0);
-
         //adding tuples to S's tuples to disk
         Random rand = new Random();
         Block b = new Block();
@@ -314,6 +312,9 @@ public class Join_Simulation{
                 i++;
             }
         }
+
+        System.out.println("Setting up relation R1(A, B) with 1000 tuples...");
+        System.out.println();
         //creating relation R1(A, B)
         Relation r1 = new Relation(disk, mem, "R1(A,B)", 1);
         b = new Block();
@@ -349,6 +350,8 @@ public class Join_Simulation{
             i++;
         }
 
+        System.out.println("Loading into memory from disk...");
+        System.out.println();
 
     }
 }
