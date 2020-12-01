@@ -249,19 +249,19 @@ public class Join_Simulation{
         public int getNumBlocks(){
             return disk.getTracks().get(this.index).size();
         }
-        public boolean getBlock(int rel_index, int block_index)  {
+        public boolean getBlock(int block_index){
             if(block_index < 0 || block_index >= NUM_OF_BLOCKS_IN_MEMORY){
                 System.err.print("block index " + block_index + " out of bound in memory" + "\n");
                 return false;
             }
-            Block b = disk.getBlock(rel_index, block_index);
+            Block b = disk.getBlock(this.index, block_index);
             if(!b.getTuples().isEmpty()) {
                 mem.setBlock(block_index, b);
                 return true;
             }
             return false;
         }
-        public boolean setBlock(int rel_index, int block_index) {
+        public boolean setBlock(int rel_index, int block_index){
             if (block_index<0 || block_index >= NUM_OF_BLOCKS_IN_MEMORY){
                 System.err.print("block index" + block_index + " out of bound in memory" + "\n");
                 return false;
