@@ -395,6 +395,8 @@ public class Join_Simulation{
 
         disk.resetDiskIO();
 
+        System.out.println("Setting up relation R2(A, B) with 1200 tuples...");
+        System.out.println();
         //creating relation R2(A, B) for part 2
         Relation r2 = new Relation(disk, mem, "R2(A,B)", 3);
         b = new Block();
